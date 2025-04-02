@@ -3,9 +3,9 @@ import { MovieCardProps } from "../../interfaces/MovieCardProps";
 import { PrimaryButton } from "../PrimaryButton";
 
 export const MovieCard = ({
-  title,
-  year,
-  poster,
+  Title,
+  Year,
+  Poster,
   imdbID,
   onDetailsClick,
   onAddWatchlistClick,
@@ -13,10 +13,10 @@ export const MovieCard = ({
   return (
     <div className="p-4 border rounded-md shadow-sm flex justify-between items-center gap-4">
       <div className="flex items-center gap-4">
-        <img src={poster} alt={title} className="w-20 h-auto rounded" />
+        <img src={Poster} alt={Title} className="w-20 h-auto rounded" />
         <div>
-          <h3 className="text-lg font-semibold">{title}</h3>
-          <p className="text-sm text-gray-600">{year}</p>
+          <h3 className="text-lg font-semibold">{Title}</h3>
+          <p className="text-sm text-gray-600">{Year}</p>
         </div>
       </div>
 

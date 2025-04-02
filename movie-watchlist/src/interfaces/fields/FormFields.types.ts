@@ -12,8 +12,13 @@ import { UseFormRegister, FieldError } from "react-hook-form";
 export interface BaseFieldProps {
   label: string;
   name: string;
-  register: UseFormRegister<any>;
+  register?: UseFormRegister<any>;
   error?: FieldError;
+}
+
+export interface SelectOption {
+  value: string;
+  label: string;
 }
 
 /**
@@ -33,7 +38,9 @@ export interface FormFieldProps extends BaseFieldProps {
  */
 export interface SelectFieldProps extends BaseFieldProps {
   /** The list of options to display in the dropdown */
-  options: string[];
+  options: SelectOption[];
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 /**

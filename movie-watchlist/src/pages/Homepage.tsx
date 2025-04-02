@@ -1,17 +1,11 @@
 import { useState } from "react";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { Search } from "lucide-react";
-import { MovieCard } from "../components/movie/MovieCard";
 import { Modal } from "../components/Modal";
-
-// Define the shape of the movie object
-interface Movie {
-  Title: string;
-  Plot: string;
-  Poster: string;
-  Response: string;
-  [key: string]: any; // Allows extra fields from the API without TypeScript errors
-}
+import { Movie } from "../interfaces/Movie";
+import { MovieDetailsModal } from "../components/movie/MovieDetailsModal";
+import { MovieList } from "../components/movie/MovieList";
+import { SelectField } from "../components/fields/SelectField";
 
 export const Homepage = () => {
   const apiKey = ""; // 🔑 Replace with your real key
@@ -21,6 +15,10 @@ export const Homepage = () => {
 
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [sortBy, setSortBy] = useState<
+    "year-asc" | "year-desc" | "title-asc" | "title-desc"
+  >("year-asc");
 
   const fetchMovie = async () => {
     const res = await fetch(
@@ -50,11 +48,39 @@ export const Homepage = () => {
     setSelectedMovie(null);
   };
 
+  const sortedResults = [...results].sort((a, b) => {
+    switch (sortBy) {
+      case "year-asc":
+        return parseInt(a.Year) - parseInt(b.Year);
+      case "year-desc":
+        return parseInt(b.Year) - parseInt(a.Year);
+      case "title-asc":
+        return a.Title.localeCompare(b.Title);
+      case "title-desc":
+        return b.Title.localeCompare(a.Title);
+      default:
+        return 0;
+    }
+  });
+
+  const sortOptions = [
+    { value: "year-asc", label: "Year ↑" },
+    { value: "year-desc", label: "Year ↓" },
+    { value: "title-asc", label: "Title A–Z" },
+    { value: "title-desc", label: "Title Z–A" },
+  ];
+
   return (
     <div className="max-w-xl mx-auto text-center mt-10 space-y-6">
       <h1 className="text-2xl font-semibold">Movie Search</h1>
 
-      <div className="flex items-center gap-2 justify-center">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault(); // Prevents page refresh
+          fetchMovie();
+        }}
+        className="flex items-center gap-2 justify-center"
+      >
         <input
           type="text"
           value={query}
@@ -62,78 +88,47 @@ export const Homepage = () => {
           placeholder="Enter movie title"
           className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
         />
+
         <PrimaryButton
-          onClick={fetchMovie}
+          type="submit"
           label="Search"
           icon={Search}
           isLoading={false}
           variant="primary"
         />
+      </form>
+
+      <div className="max-w-xs mx-auto">
+        <SelectField
+          label="Sort by"
+          name="sortBy"
+          value={sortBy}
+          onChange={(e) =>
+            setSortBy(
+              e.target.value as
+                | "year-asc"
+                | "year-desc"
+                | "title-asc"
+                | "title-desc"
+            )
+          }
+          options={sortOptions}
+        />
       </div>
 
-      {results.length > 0 && (
-        <div className="mt-8 space-y-4">
-          {[...results]
-            .sort((a, b) => parseInt(a.Year) - parseInt(b.Year)) // ascending by year
-            .map((movie) => (
-              <MovieCard
-                key={movie.imdbID}
-                title={movie.Title}
-                year={movie.Year}
-                poster={movie.Poster}
-                imdbID={movie.imdbID}
-                onDetailsClick={handleDetailsClick}
-                onAddWatchlistClick={handleAddWatchlist}
-              />
-            ))}
-        </div>
+      {sortedResults.length > 0 && (
+        <MovieList
+          movies={sortedResults}
+          onDetailsClick={handleDetailsClick}
+          onAddWatchlistClick={handleAddWatchlist}
+        />
       )}
 
-{selectedMovie && (
-  <Modal
-    isOpen={isModalOpen}
-    onClose={handleCloseModal}
-    title={selectedMovie.Title}
-  >
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-  {/* Poster section */}
-  <div className="flex justify-center">
-    <img
-      src={selectedMovie.Poster}
-      alt={selectedMovie.Title}
-     className="w-[280px] md:w-[300px] lg:w-[350px] rounded-xl shadow-md object-cover"
-    />
-  </div>
-
-  {/* Info section */}
-  <div className="space-y-4 text-base text-gray-800">
-    <p className="text-gray-600 text-sm">
-      {selectedMovie.Year} • {selectedMovie.Runtime} • Rated {selectedMovie.Rated}
-    </p>
-
-    <p><span className="font-bold">Genre:</span> {selectedMovie.Genre}</p>
-    <p><span className="font-bold">Director:</span> {selectedMovie.Director}</p>
-    <p><span className="font-bold">Actors:</span> {selectedMovie.Actors}</p>
-    <p><span className="font-bold">Language:</span> {selectedMovie.Language}</p>
-    <p><span className="font-bold">Country:</span> {selectedMovie.Country}</p>
-
-    <p className="flex items-center gap-1">
-      <span className="font-bold">IMDb Rating:</span>
-      <span className="flex items-center gap-1 text-yellow-500">★ {selectedMovie.imdbRating}/10</span>
-    </p>
-
-    <p><span className="font-bold">Awards:</span> {selectedMovie.Awards}</p>
-
-    <div>
-      <h4 className="text-lg font-semibold mt-4">Plot</h4>
-      <p className="text-sm text-gray-700">{selectedMovie.Plot}</p>
-    </div>
-  </div>
-</div>
-
-  </Modal>
-)}
-
+      {selectedMovie && (
+        <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+          <MovieDetailsModal movie={selectedMovie} />
+        </Modal>
+      )}
     </div>
   );
 };

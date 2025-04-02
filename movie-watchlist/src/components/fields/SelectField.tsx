@@ -18,13 +18,14 @@ import { SelectFieldProps } from "../../interfaces/fields/FormFields.types";
  * />
  */
 
-
 export const SelectField = ({
   label,
   name,
   options,
   register,
   error,
+  value,
+  onChange,
 }: SelectFieldProps) => {
   return (
     <div>
@@ -33,15 +34,19 @@ export const SelectField = ({
 
       {/* Select input bound to react-hook-form with dynamic error styling */}
       <select
-        {...register(name)}
+        {...(register ? register(name) : {})}
+        value={value}
+        onChange={onChange}
         className={`mt-1 w-full px-3 py-2 border rounded shadow-sm focus:ring-2 ${
-          error ? "border-red-500 ring-red-500" : "border-gray-300 focus:ring-blue-500"
+          error
+            ? "border-red-500 ring-red-500"
+            : "border-gray-300 focus:ring-blue-500"
         }`}
       >
         {/* Render dropdown options */}
         {options.map((option) => (
-          <option key={option} value={option}>
-            {option}
+          <option key={option.value} value={option.value}>
+            {option.label}
           </option>
         ))}
       </select>

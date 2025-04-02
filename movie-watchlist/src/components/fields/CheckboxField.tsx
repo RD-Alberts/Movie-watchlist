@@ -25,11 +25,7 @@ export const CheckboxField = ({
   return (
     <div className="flex items-center space-x-2">
       {/* Checkbox input registered with react-hook-form */}
-      <input
-        type="checkbox"
-        {...register(name)}
-        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-      />
+      <input type="checkbox" {...(register ? register(name) : {})} />
 
       {/* Label displayed next to the checkbox */}
       <label className="text-sm font-medium text-gray-700">{label}</label>
