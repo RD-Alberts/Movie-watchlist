@@ -24,7 +24,61 @@ Data is fetched from the [OMDb API](https://www.omdbapi.com/).
 - ⭐ IMDb ratings with dynamic badge styling
 - 🖼️ Icon-based metadata using Lucide React
 - 🌙 Clean, responsive UI with Tailwind CSS
+- - 🧩 Custom reusable `<Button>` component using Tailwind config colors and optional Lucide icons  
+- 🧾 Form field components like `<SelectField>`, `<TextareaField>`, etc. are built to work seamlessly with [React Hook Form](https://react-hook-form.com/) and support controlled usage
 
+
+<br />
+
+## 🧩 Custom Components
+
+### Primary button
+
+A reusable, stylable `<PrimaryButton />` built with Tailwind CSS and Lucide icons.  
+Supports different variants (e.g. `success`, `danger`, `outline`), optional icons, and loading state.
+
+📄 [View the component](./movie-watchlist/src/components/PrimaryButton.tsx)
+
+```tsx
+import { Check } from "lucide-react";
+import PrimaryButton from "@/components/PrimaryButton";
+
+<PrimaryButton
+  label="Submit"
+  icon={Check}
+  variant="success"
+  onClick={handleSubmit}
+  isLoading={true}
+/>;
+
+```
+
+
+### Checkbox field
+
+A reusable, accessible `<CheckboxField />` built with Tailwind CSS.  
+Works with both [React Hook Form](https://react-hook-form.com/) and controlled components, making it flexible for many form use cases.
+
+📄 [View the component](./movie-watchlist/src/components/fields/CheckboxField.tsx)
+
+```tsx
+// ✅ With react-hook-form
+<CheckboxField
+  label="I agree to the terms"
+  name="terms"
+  register={register}
+  error={errors.terms}
+/>
+
+// ✅ Controlled usage
+<CheckboxField
+  label="Accept"
+  name="accept"
+  checked={isChecked}
+  onChange={(e) => setIsChecked(e.target.checked)}
+/>
+
+```
 <br />
 
 ## 🛠️ Getting Started
